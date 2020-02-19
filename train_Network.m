@@ -1,81 +1,53 @@
-function net = train_Network(X, Y)
+function net = train_Network(X, Y, h1, h2)
 %TRAINNETWORK train network on data X with data Y as labed output
 %   Trains CNN on hardcoded number of layers and their types
 %% treniranje prvog skrivenog sloja
+xt = X';
 
-Xnew = reshape(X, [30 30 1 size(X,1)]);
+hiddenSize1 = h1;  % prvi skriveni sloj sa 100 neurona
+hiddenSize2 = h2;
 
-layers = [
-    imageInputLayer([30 30 1]) %specificira se velièina ulaznog sloja
-    %slika je 28 x 28 x 1 kanal (grayscale)
-    
-    %definira skriveno konvolucijski sloj, sa velilèinom maske konvolucije
-    %3 znaèi 3 x 3
-    % Druga vrijednost je broj filtera, u ovom sluèaju 8
-    %parametri 'Padding','same' odreðuju da je izlaz iste velièine kao i
-    %ulaz
-    convolution2dLayer(3,8,'Padding','same')
-    
-    %optimizacija  koja normalizira gardijene i aktivaciju kroz mrežu
-    batchNormalizationLayer
-    
-    %dodavanje sloja nelinearne aktivacijske funckije, koristi se 
-    %rectified linear unit (ReLU)
-    reluLayer
-    
-    % down-sampling operacija koja reducira velicinu feature map i uklanja redudantne informacije
-    % max pooling vraæa max vriejdnost regije 2 x 2 
-    % 'Stride' definira velièinu koraka u postupku treniranja 
-    maxPooling2dLayer(2,'Stride',2)
-    
-%% drugi skriveni konvolucijski sloj, isti postupak kao maloprije
+%namjestanje opcija neuronske mreze. ulazni set je XTrainImages
+% 400 epoha.. treniranje moze potrajati dosta 
+autoenc1 = trainAutoencoder(xt,hiddenSize1, ...
+    'MaxEpochs',400, ...
+    'L2WeightRegularization',0.004, ...
+    'SparsityRegularization',4, ...
+    'SparsityProportion',0.15, ...
+    'ScaleData', false);
 
-    convolution2dLayer(3,16,'Padding','same')
-    batchNormalizationLayer
-    reluLayer
-    maxPooling2dLayer(2,'Stride',2)
-    
-    % treci skriveni konvolucijski sloj, isti postupak kao i maloprije
-    convolution2dLayer(3,32,'Padding','same')
-    batchNormalizationLayer
-    reluLayer
-    
-%% fullyConnectedLayer    
-    % u ovom sloju su svi neuroni spojeni sa svim neuronima iz prethodnog
-    % sloja, prisiljava da se potencialno korste svi fetur-i iz prethodnog
-    % sloja
-    fullyConnectedLayer(92)
-    
-%% softmaxLayer   
-    % sloj koji normalizira izlaze iz prethodnog sloja 
-    %izlaz moze biti max 1, sto olaksava izracun vjerojatnosti "izlazne"
-    %klase
-    softmaxLayer
+view(autoenc1) %prikaz prvog autoenkodera
 
-%% classificationLayer    
-    %posljednji sloj koji klasificira izlaze s obzirom na prethodni
-    %normalizirani sloj, i vjerojatnosti koje on vraca
-    classificationLayer];
+figure() %prikaz tezinski od skrivenog sloja
+%prikaz tezina u formatu 10 x 10 slika, za svih 100 neurona
+plotWeights(autoenc1); 
 
-%% treniranje mreže
-% opcije treniranja mreze
-% metoda je stochastic gradient descent with momentum (SGDM) sa pocetni
-% korakom ucenja 0.01
-% 4 epohe , ciklusa treniranja sa svim podacima za treniranje
-% 'Shuffle' 'every-epoch' u svakom ciklusu zamjesa raspored podataka za
-% treniranje
-% ostatak naredbi priprema vizualizaciju procesa treniranja
-options = trainingOptions('sgdm', ...
-    'InitialLearnRate',0.01, ...
-    'MaxEpochs',4, ...
-    'Shuffle','every-epoch', ...
-    'ValidationFrequency',30, ...
-    'Verbose',false, ...
-    'Plots','training-progress');
+%izvlacene znacajki prvog sloja autoenkodera
+feat1 = encode(autoenc1,xTrainImages);
 
-%treniranje mreže
-net = trainNetwork(Xnew, Y, layers, options);
+%% treniranje drugog skrivenog sloja
+%opcije autoenkodera, primjetite da su ulazi voog sloja izlaz prethodnog
+%feat1
+autoenc2 = trainAutoencoder(feat1,hiddenSize2, ...
+    'MaxEpochs',100, ...
+    'L2WeightRegularization',0.002, ...
+    'SparsityRegularization',4, ...
+    'SparsityProportion',0.1, ...
+    'ScaleData', false);
 
+view(autoenc2) %prikaz 2 sloja
+
+feat2 = encode(autoenc2,feat1); % izlacenje znacajki iz 2 sloja
+
+softnet = trainSoftmaxLayer(feat2,Y','MaxEpochs',400);
+
+%stackanje sva tri sloja u jednu mrezu
+stackednet = stack(autoenc1,autoenc2,softnet);
+
+%prikaz stackane mreze
+view(stackednet)
+
+net = stackednet;
 
 end
 
