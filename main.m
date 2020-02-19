@@ -5,38 +5,35 @@ imshow(R);
 hold on;
 axis on;
 [rows, columns] = size(R);
-
-% S = ImageChop(R);
+% cy = categorical(y);
+% prikaz_dataset();
+% net = train_Network(X, cy);
 
 % Prema slici, širina slova je 20px
 % Širina grba je 30px
 % Pattern kidanja slova je 20 20 30 20 20 20 15 20 20
+%pattern = [20, 20, 40, 20, 15, 10, 25, 13];
 
-prikaz_dataset();
+pattern2 = [0 20, 40, 60, 80, 100, 115, 125, 147, 163];
 
-Z = digitTrainCellArrayData;
-[x1, x2] = digitTrainCellArrayData;
+images = {};
 
-net = train_Network(X, y);
+%Z = digitTrainCellArrayData;
+%[x1, x2] = digitTrainCellArrayData;
 
-char_1=R(:,1:20);
-char_2=R(:,21:40);
-char_3=R(:,61:80);
-char_4=R(:,81:100);
-char_5=R(:,101:115);
-char_6=R(:,116:125);
-char_7=R(:,131:150);
-char_8=R(:,151:163);
+for i = 2 : 1 : length(pattern2)
+    images{i} = R(:,pattern2(i-1) + 1: pattern2(i));
+end
 
-imshow(char_6);
+images(1) = [];
+images(3) = [];
 
-subplot(3,3,1),imshow(char_1);
-subplot(3,3,2),imshow(char_2);
-subplot(3,3,3),imshow(char_3);
-subplot(3,3,4),imshow(char_4);
-subplot(3,3,5),imshow(char_5);
-subplot(3,3,6),imshow(char_6);
-subplot(3,3,7),imshow(char_7);
-subplot(3,3,8),imshow(char_8);
-% subplot(2,2,4),imshow(char_4);
+for j = 1 : length(images)
+    subplot(3,3,j); imshow(images{j});
+end
 
+for i = 1 : 1 : length(images)
+    ir = imresize(images{i}, [30, 30]);
+    imshow(ir);
+    
+end

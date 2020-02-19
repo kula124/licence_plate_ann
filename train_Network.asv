@@ -3,7 +3,7 @@ function net = train_Network(X, Y)
 %   Trains CNN on hardcoded number of layers and their types
 %% treniranje prvog skrivenog sloja
 
-Xnew = reshape(X, [30 30 1 size(X,1)]);
+Xnew = reshape(X, [size(X,1), 30, 30, siez(X,2)]);
 
 layers = [
     imageInputLayer([30 30 1]) %specificira se velièina ulaznog sloja
@@ -44,7 +44,7 @@ layers = [
     % u ovom sloju su svi neuroni spojeni sa svim neuronima iz prethodnog
     % sloja, prisiljava da se potencialno korste svi fetur-i iz prethodnog
     % sloja
-    fullyConnectedLayer(92)
+    fullyConnectedLayer(10)
     
 %% softmaxLayer   
     % sloj koji normalizira izlaze iz prethodnog sloja 
@@ -74,7 +74,7 @@ options = trainingOptions('sgdm', ...
     'Plots','training-progress');
 
 %treniranje mreže
-net = trainNetwork(Xnew, Y, layers, options);
+net = trainNetwork(X, Y, layers, options);
 
 
 end
