@@ -7,7 +7,7 @@ axis on;
 [rows, columns] = size(R);
 % cy = categorical(y);
 % prikaz_dataset();
-% net = train_Network(X, cy);
+net = train_Network(X, y, hidden_layer1_size, hidden_layer2_size);
 
 % Prema slici, širina slova je 20px
 % Širina grba je 30px
