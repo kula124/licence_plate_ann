@@ -17,7 +17,7 @@ prikaz_dataset();
 Z = digitTrainCellArrayData;
 [x1, x2] = digitTrainCellArrayData;
 
-net = train_Network(X, y, hidden_layer1_size, hidden_layer2_size);
+net = train_Network(X, y);
 
 char_1=R(:,1:20);
 char_2=R(:,21:40);
