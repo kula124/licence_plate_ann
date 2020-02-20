@@ -6,7 +6,7 @@ hold on;
 axis on;
 [rows, columns] = size(R);
 % cy = categorical(y);
-% prikaz_dataset();
+ prikaz_dataset();
 % net = train_Network(X, cy);
 
 % Prema slici, širina slova je 20px
@@ -15,6 +15,20 @@ axis on;
 %pattern = [20, 20, 40, 20, 15, 10, 25, 13];
 
 pattern2 = [0 20, 40, 60, 80, 100, 115, 125, 147, 163];
+
+resultMap = cell(92,1);
+resultMap{11} = '-';
+for i = 1 : 10
+    resultMap{13+i} = num2str(i-1);
+end
+
+j = 65;
+for i = 31 : 31+27
+    resultMap{i} = char(j);
+    j = j+1;
+end
+
+resultMap
 
 images = {};
 
