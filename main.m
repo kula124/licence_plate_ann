@@ -1,3 +1,8 @@
+prikaz_dataset();
+filteredX = filterX();
+%cy = categorical(y);
+%net = train_Network(X, cy);
+
 A = imread('./images/slika1.jpg');
 J = imcrop(A);
 R = rgb2gray(imresize(J, [30, 163]));
@@ -5,10 +10,8 @@ imshow(R);
 hold on;
 axis on;
 [rows, columns] = size(R);
-% cy = categorical(y);
- prikaz_dataset();
-% net = train_Network(X, cy);
-
+% NET--
+% --
 % Prema slici, širina slova je 20px
 % Širina grba je 30px
 % Pattern kidanja slova je 20 20 30 20 20 20 15 20 20
@@ -28,12 +31,7 @@ for i = 31 : 31+27
     j = j+1;
 end
 
-resultMap
-
 images = {};
-
-%Z = digitTrainCellArrayData;
-%[x1, x2] = digitTrainCellArrayData;
 
 for i = 2 : 1 : length(pattern2)
     images{i} = R(:,pattern2(i-1) + 1: pattern2(i));
@@ -48,6 +46,7 @@ end
 
 for i = 1 : 1 : length(images)
     ir = imresize(images{i}, [30, 30]);
+    ir = 255-ir;
     imshow(ir);
-    
+    Ypred = classify(net, ir);
 end

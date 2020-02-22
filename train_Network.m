@@ -3,7 +3,7 @@ function net = train_Network(X, Y)
 %   Trains CNN on hardcoded number of layers and their types
 %% treniranje prvog skrivenog sloja
 
-Xnew = reshape(X, [30 30 1 size(X,1)]);
+Xnew = reshape(X', [30 30 1 41952]);
 
 layers = [
     imageInputLayer([30 30 1]) %specificira se velièina ulaznog sloja
