@@ -1,12 +1,14 @@
 prikaz_dataset();
-filteredX = filterX();
-%cy = categorical(y);
-%net = train_Network(X, cy);
+[nx, ny] = filterX(X);
+[nnx, nny] = filterXn(X);
 
-A = imread('./images/slika1.jpg');
-J = imcrop(A);
-R = rgb2gray(imresize(J, [30, 163]));
-imshow(R);
+net = train_Network(nx, ny, 27);
+close all;
+netm = train_Network(nnx, nny, 10);
+close all;
+
+R = rgb2gray(imresize(imcrop(imread('./images/slika2.jpg')), [30, 163]));
+% imshow(R);
 hold on;
 axis on;
 [rows, columns] = size(R);
@@ -17,24 +19,12 @@ axis on;
 % Pattern kidanja slova je 20 20 30 20 20 20 15 20 20
 %pattern = [20, 20, 40, 20, 15, 10, 25, 13];
 
-pattern2 = [0 20, 40, 60, 80, 100, 115, 125, 147, 163];
-
-resultMap = cell(92,1);
-resultMap{11} = '-';
-for i = 1 : 10
-    resultMap{13+i} = num2str(i-1);
-end
-
-j = 65;
-for i = 31 : 31+27
-    resultMap{i} = char(j);
-    j = j+1;
-end
+pattern2 = [1 20, 40, 60, 80, 100, 115, 125, 147, 163];
 
 images = {};
 
 for i = 2 : 1 : length(pattern2)
-    images{i} = R(:,pattern2(i-1) + 1: pattern2(i));
+    images{i} = R(:,pattern2(i-1): pattern2(i));
 end
 
 images(1) = [];
@@ -44,9 +34,18 @@ for j = 1 : length(images)
     subplot(3,3,j); imshow(images{j});
 end
 
+answ = '';
+
 for i = 1 : 1 : length(images)
     ir = imresize(images{i}, [30, 30]);
-    ir = 255-ir;
+    ir = prepareImage(ir);
     imshow(ir);
-    Ypred = classify(net, ir);
+    ypred = '';
+    if i > 2 && i < 6
+        ypred = classify(netm, ir);
+    else
+        ypred = classify(net, ir);
+    end
+    
+    answ = answ + string(ypred);
 end

@@ -1,9 +1,9 @@
-function net = train_Network(X, Y)
+function net = train_Network(X, Y, c)
 %TRAINNETWORK train network on data X with data Y as labed output
 %   Trains CNN on hardcoded number of layers and their types
 %% treniranje prvog skrivenog sloja
 
-Xnew = reshape(X', [30 30 1 41952]);
+Xnew = reshape(X', [30 30 1 size(X,1)]);
 
 layers = [
     imageInputLayer([30 30 1]) %specificira se velièina ulaznog sloja
@@ -44,7 +44,7 @@ layers = [
     % u ovom sloju su svi neuroni spojeni sa svim neuronima iz prethodnog
     % sloja, prisiljava da se potencialno korste svi fetur-i iz prethodnog
     % sloja
-    fullyConnectedLayer(92)
+    fullyConnectedLayer(c)
     
 %% softmaxLayer   
     % sloj koji normalizira izlaze iz prethodnog sloja 
